@@ -6,9 +6,9 @@ The agent-based model utilizes the XGBoost (eXtreme Gradient Boosting) algorithm
 
 The XGBoost model was trained on survey data obtained for the Netherlands available from the Imperial College London & YouGov COVID-19 Behavior Tracker Hub (https://github.com/YouGov-Data/covid-19-tracker). XGBoost hyperparameter tuning and algorithm training are conducted in "Train_xgb_network_model.R" using "nl_yougov_dataset.csv". The data analysis period was 24 June 2020 – 13 January 2021. 
 
-The network model utilizes underlying synthetic network structures (small world, random, preferential attachment) to represent the daily contacts among modelled agents (N=10,000) in "Contruct_synthetic_networks.R". Agents are assigned characteristics from "nl_yougov_dataset.csv". 
+The network model utilizes underlying synthetic network structures (small world, random, preferential attachment) to represent the daily contacts among modelled agents (N=10,000) in "Construct_synthetic_networks.R". Agents are assigned characteristics from "nl_yougov_dataset.csv". 
 
-"SIHR_Network_Function.R" contains the model code. The model cycles over the number of time steps specified. Epidemiologically agents exist in susceptible, infectious, hospitalized, and recovered states. Behaviorally agents can be unaware of the epidemic, aware of the epidemic but not practicing behavior, aware of the epidemic and practicing behavior, aware of the epidemic and fatigued from behavior, aware of the epidemic and practicing behavior following re-adoption. 
+"SIHR_Network_Function.R" contains the model code. The model cycles over the number of time steps specified (days). Epidemiologically agents exist in susceptible, infectious, hospitalized, and recovered states. Recovered agents remain immune for the duration of the model. Behaviorally agents can be unaware of the epidemic, aware of the epidemic but not practicing behavior, aware of the epidemic and practicing behavior, aware of the epidemic and fatigued from behavior, aware of the epidemic and practicing behavior following re-adoption. 
 
 The model is set-up to run simulations in parallel. All necessary functions, parameters, and dependencies are initialized in "Run_behavior_network_model.R" and passed to "Network_model_parallel_function.R". 
 
