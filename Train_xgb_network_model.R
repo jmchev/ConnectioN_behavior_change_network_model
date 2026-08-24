@@ -32,7 +32,7 @@ library(mgcv)
 
 setwd("...")
 
-load("nl_yougov_dataset.csv")
+nl_yougov_data<- read.csv("nl_yougov_dataset.csv")
 
 outcome<- c("social_distance_binary")
 
