@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "ConnectioN Project: Agent-based model with machine learning driven behavioral change"
+authors:
+  - family-names: "Chevalier"
+    given-names: "Joshua Michael"
+    affiliation: "UMC Utrecht"
+version: 1.0.0
+date-released: 2026-08-24
+repository-code: "https://github.com/jmchev/ConnectioN_behavior_change_network_model"
