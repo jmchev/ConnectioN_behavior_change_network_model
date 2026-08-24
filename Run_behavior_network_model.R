@@ -8,13 +8,12 @@ library(pbapply)
 
 setwd("...")
 
+source("Construct_synthetic_networks.R")
+
 source("SIHR_Network_Function.R")
 
 source("Network_model_parallel_function.R")
 
-# Load synthetic networks 
-
-load("Synthetic_network_data.RData")
 
 # Load XGBoost model 
 
@@ -39,8 +38,7 @@ networks<- list("Preferential attachment"= pa,
 timesteps <- 1500
 infection_prob <- 0.0328
 recovery_time_I <- 10
-cumulative_hosp_prob<- 0.01
-hosp_prob <- (1-exp(-0.008)) # 1 - (1 - cumulative_hosp_prob)^(1/recovery_time_I)
+hosp_prob <- (1-exp(-0.008)) 
 recovery_time_H <- 15 # 24
 mu<-0.53
 alpha_aware<-15
@@ -193,23 +191,6 @@ for(q in seq_along(networks)){
                                                                     )]))
 
 }
-
-
-
-
-behavior_results_v14<- list(sihr_sim_output_behavior, node_sim_output_behavior)
-
-save(behavior_results_v14, file="behavior_results_v14_03July2026.RData")
-
-
-
-behavior_results_v9 <- list(sihr_sim_output_behavior, node_sim_output_behavior)
-
-
-save(behavior_results_v9, file="behavior_results_v9_25June2026.RData")
-
-
-
 
 
 
