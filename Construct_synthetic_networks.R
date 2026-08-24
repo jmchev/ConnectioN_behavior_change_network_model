@@ -8,7 +8,17 @@ library(Matrix)
 
 #Import Imperial College/YouGov Netherlands COVID-19 Behavior Tracker Survey Data#
 
-nl_df<- read.csv("netherlands_xgb_behavior_dataset.csv")
+nl_yougov_dataset<- read.csv("nl_yougov_dataset.csv")
+
+outcome<- c("social_distance_binary")
+
+predictors<- c("age", "gender",  "hospital_occupancy_per_100k", "perc_severe", "willing_to_isolate", "working_outside_home")
+
+nl_df<- nl_yougov_dataset %>% 
+  filter(date>="2020-06-24" && date<="2021-01-13") %>% 
+  dplyr::select(all_of(c(outcome,predictors))) %>%
+  na.omit %>% mutate(gender=case_when(gender=="Male"~0, gender=="Female"~1))
+
 
 
 ################################################################################
