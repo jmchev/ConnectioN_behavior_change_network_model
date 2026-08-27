@@ -6,14 +6,11 @@ library(pbapply)
 
 # Source scripts with required functions
 
-setwd("...")
-
 source("Construct_synthetic_networks.R")
 
 source("SIHR_Network_Function.R")
 
 source("Network_model_parallel_function.R")
-
 
 # Load XGBoost model 
 
@@ -25,9 +22,9 @@ xg_behavior_model <- readRDS("xg_behavior_model.rds")
 
 # Initialize empty results data frames
 
-# sihr_sim_output_behavior<- data.table()
+sihr_sim_output_behavior<- data.table()
 
-# node_sim_output_behavior<- data.table()
+node_sim_output_behavior<- data.table()
 
 # Networks list
 networks<- list("Preferential attachment"= pa,
@@ -35,47 +32,46 @@ networks<- list("Preferential attachment"= pa,
                 "Small world" = sw)
 
 # MODEL PARAMETERS
-timesteps <- 1500
-infection_prob <- 0.0328
-recovery_time_I <- 10
-hosp_prob <- (1-exp(-0.008)) 
-recovery_time_H <- 15 # 24
-mu<-0.53
-alpha_aware<-15
-beta_aware<-0.55
-fatigue_shape<-2.34
-fatigue_scale<-43.46
-alpha_hosp<-13
-beta_hosp<-0.50
-hosp_window<- 7
-hosp_threshold<- 0.05
-awareness<- T
-behavior<- T
-fatigue<- T
-readopt<- T
-gate<- T
-threshold<- F
-voi<- c("age", "gender", "hospital_occupancy_per_100k", "perc_severe", "willing_to_isolate", "working_outside_home")
-scaling_factor<- 100  #necessary to normalize hospitalization rate to range recognized by XGBoost function
+timesteps <- 1500             # time steps in days 
+infection_prob <- 0.0328      # transmission probability per contact per day
+recovery_time_I <- 10.        # length of infectiousness period
+hosp_prob <- (1-exp(-0.008))  # hospitalization probability per day
+recovery_time_H <- 15         # length of time in hospital (fully isolated)
+mu<-0.53                      # proportion of edges kept when practicing social distancing
+alpha_aware<-15               # logistic function alpha parameter for awareness function (slope)
+beta_aware<-0.55              # logistic function alpha parameter for awareness function (midpoint)
+fatigue_shape<-2.34           # weibull distribution shape parameter (rweibull)
+fatigue_scale<-43.46          # weibull distribution scale parameter (rweibull)
+alpha_hosp<-13                # logistic function alpha parameter for readoption function (slope)
+beta_hosp<-0.50               # logistic function beta parameter for readoption function (midpoint)
+hosp_window<- 7               # OPTION to only reassess behavior based on % change in hospitalizations based on window of X days (days in assessment window)
+hosp_threshold<- 0.05         # OPTION to only reassess behavior based on % change (this is the percent change)
+awareness<- T                 # Turn ON or OFF the awareness function (TRUE/FALSE)
+behavior<- T                  # Turn ON or OFF the behavior function (TRUE/FALSE)
+fatigue<- T                   # Turn ON or OFF the fatigue function (TRUE/FALSE)
+readopt<- T                   # Turn ON or OFF readoption (TRUE/FALSE)
+gate<- T                      # Turn ON or OFF hospital function for readoption (TRUE/FALSE): readoption probability multiplier
+threshold<- F                 # Turn ON or OFF percent change in hospitalizations for behavior reassessment
+scaling_factor<- 100          # Normalize hospitalization rate to range recognized by XGBoost function (divided by scaling factor)
+
+# variables of interest (VOI) that the XGBoost function uses to assess behavior 
+voi<- c("age", 
+        "gender", 
+        "hospital_occupancy_per_100k", 
+        "perc_severe", "willing_to_isolate", 
+        "working_outside_home")
 
 
-first_infected="random"    #OPTIONS: "random", "degree", "eigenvector", "betweenness", "closeness"
-starting_infections=2        #NUMERIC: choose how many starting infections 
+first_infected="random"      # OPTIONS: "random", "degree", "eigenvector", "betweenness", "closeness"
+starting_infections=2        # NUMERIC: choose how many starting infections 
 
 
-# Model loop for network types (NOTE: ensure parameters are initialized)
-
-sihr_sim_output_behavior<- data.table()
-
-node_sim_output_behavior<- data.table()
-
+# Function to loop over the three synthetic networks 
 
 for(q in seq_along(networks)){
   
   # Assign network type
   network<- networks[[q]]
-  
-  #network<- sw
   
   # Compute network centralities
   sim_centralities<-
@@ -141,13 +137,14 @@ for(q in seq_along(networks)){
                       scaling_factor)
   
   
-  # create cluster with 10 cores (12 cores total, 8 performance, 4 efficiency)
+  # create cluster with X cores (the number subtracted is the number of cores saved for other tasks)
   cl <- makeCluster(parallel::detectCores() - 2)
   
-  # export everything the function needs to each core
+  # export everything requried to run the model to each core
   clusterExport(cl, c("network", "model_params", "first_infected", "starting_infections", "sim_centralities", 
                       "xg_behavior_model","run_sihr_network", "run_model_functon"))
   
+  # load the packages each core will need to run the model
   clusterEvalQ(cl, {
     library(igraph)
     library(data.table)
@@ -159,11 +156,11 @@ for(q in seq_along(networks)){
     library(readr)
   })
   
-  # set cluster seed
+  # set cluster seed for reproducibility
   clusterSetRNGStream(cl, iseed = 123)
   
-  
-  sim_results <- pblapply(1:100, function(k){
+  # parallel function 1:number of simulations desired
+  sim_results <- pblapply(1:2, function(k){
     run_model_functon(k, network, first_infected, starting_infections, sim_centralities, model_params)
   }, cl = cl)
   
@@ -191,6 +188,11 @@ for(q in seq_along(networks)){
                                                                     )]))
 
 }
+
+
+
+
+
 
 
 

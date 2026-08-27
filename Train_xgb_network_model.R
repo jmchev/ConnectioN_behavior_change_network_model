@@ -30,18 +30,19 @@ library(ggpubr)
 library(gam)
 library(mgcv)
 
-setwd("...")
-
-nl_yougov_data<- read.csv("nl_yougov_dataset.csv")
+nl_yougov_data<- readRDS("nl_yougov_data.rds")
 
 outcome<- c("social_distance_binary")
 
-predictors<- c("age", "gender",  "hospital_occupancy_per_100k", "perc_severe", "willing_to_isolate", "working_outside_home")
+predictors<- c("age", 
+               "gender",  
+               "hospital_occupancy_per_100k", 
+               "perc_severe", 
+               "willing_to_isolate", 
+               "working_outside_home")
 
 temp_df<- nl_yougov_data %>% 
-  filter(date>="2020-06-24" && date<="2021-01-13") %>% 
-  dplyr::select(all_of(c(outcome,predictors))) %>%
-  na.omit %>% mutate(gender=case_when(gender=="Male"~0, gender=="Female"~1))
+  dplyr::select(all_of(c(outcome,predictors))) 
 
 
 
@@ -345,7 +346,7 @@ xgb_function<- function(xg_training_data,
       predictive_value_zeros=sum(prediction_df$success_zero)/(nrow(prediction_df) - sum(prediction_df$actual)))
   
   
-  return(list(xg_output, prediction_df_xg, shap_vals_df, shap_avg_interactions, shap_abs_interactions, shap_df_long, shap_vals_df_long, shap_contribution_df))
+  return(list(xg_output, prediction_df_xg, shap_vals_df, shap_avg_interactions, shap_abs_interactions, shap_df_long, shap_vals_df_long, shap_contribution_df, xg_model))
   
 }
 
@@ -374,9 +375,7 @@ full_shap<- xgb_list[[7]]
 shap_contributions <- xgb_list[[8]]
 
 
+xg_behavior_model<- xgb_list[[9]]
 
 saveRDS(xg_behavior_model, "xg_behavior_model.rds")
-xgb_ <- readRDS("xg_behavior_model.rds")
-all.equal(xg_behavior_model, xgb_)
-
 

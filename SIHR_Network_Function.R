@@ -17,7 +17,8 @@ library(naniar)
 
 run_sihr_network<-
   function(g, model_params){
-  
+    
+    # assign model parameters from list (ensure the order aligns with that specified in the run file)
     n<- model_params[[1]]
     timesteps<- model_params[[2]]
     infection_prob<- model_params[[3]]
@@ -62,9 +63,10 @@ run_sihr_network<-
     edges <- which(A != 0, arr.ind = TRUE)
     edges <- edges[edges[,1] < edges[,2], , drop = FALSE]
     
-    # initialize the active edge vector, they all begin as true
+    # initialize the active edge vector, they all begin as TRUE
     edge_active<- rep(TRUE, nrow(edges))
     
+    # Social distancing mu parameter OPTIONS (if mu>1 that is the maximum number of contacts kept)
     if(mu<1){
       
       mu_vec <- rep(mu, vcount(g))
@@ -97,7 +99,7 @@ run_sihr_network<-
     # list of degrees of all agents
     deg<- degree(g)
     
-    # we initialize our xgboost input data and only update hospitalizations during the loop
+    # we initialize our xgboost input data from the network agents and only update hospitalizations during the loop
     pred_df <- data.frame(
       age = as.numeric(V(g)$age),
       gender = as.numeric(V(g)$gender),
@@ -111,6 +113,7 @@ run_sihr_network<-
     abandon_times <- vector("list", vcount(g))
     hr_at_adoption <- vector("list", vcount(g))
     
+    # track the effective reproduction number
     rt_tracker <- data.table(
       t = 1:timesteps,
       new_infected = NA_integer_,
@@ -134,6 +137,7 @@ run_sihr_network<-
         max_hosp <- max(max_hosp, current_hosp)
       }
       
+      # hospital ratio (CURRENT:RUNNING MAX)
       hosp_ratio<- ifelse(max_hosp>0, current_hosp/max_hosp, 0)
       
       # awareness state transitions if TRUE
@@ -221,7 +225,7 @@ run_sihr_network<-
         
         print("fatigued done")
         
-        # calculate hospitalization percent change metric, can be used to gate behavior change check
+        # OPTION: calculate hospitalization percent change metric, can be used to gate behavior change check
         
         if (t <= (hosp_window*2)){
           
@@ -252,10 +256,12 @@ run_sihr_network<-
         }
         
         print(paste("door", door))
+        
+        # If door is open, behavior adoption is assessed
           
         if(door=="open"){
           
-          # who is eligible to adopt behavior
+          # who is eligible to adopt behavior, readoption is TRUE or FALSE
           
           if(readopt==TRUE){
             
@@ -294,16 +300,17 @@ run_sihr_network<-
             dpred <- xgb.DMatrix(as.matrix(pred_df[behavior_eligible,]))
             contributions <- predict(xg_behavior_model, dpred, predcontrib = TRUE)
             
-            # Sum only the features that we want to drive probability
+            # Sum only the features that we want to drive probability (VOI)
             # contributions has one column per feature plus a BIAS column
             
-            #assigned in initial parameters
+            # assigned in initial parameters
             selected_features <- voi 
             
+            # sum the marginal probabilities
             margin <- rowSums(contributions[, selected_features, drop = FALSE]) +
               contributions[, "BIAS"]
             
-            #probability of adopting behavior
+            #probability of adopting behavior over 7-day period, converted to per day probability
             
             p_behavior <- (1-(1-plogis(margin))^(1/7)) * hosp_gate
             
@@ -325,6 +332,8 @@ run_sihr_network<-
               V(g)$total_days_behavior[adopted] <- ifelse(is.na(V(g)$total_days_behavior[adopted]), 0, V(g)$total_days_behavior[adopted])
               
               V(g)$ever_behavior[adopted] <- 1
+              
+              # draw fatigue time if fatigue is TRUE, otherwise fatigue time = total time steps
               
               if(fatigue==TRUE){
                 
@@ -362,11 +371,13 @@ run_sihr_network<-
       }
       #end of behavior=T
       
+      # new hospitalizations
+      
       newly_hospitalized <- infected[rbinom(length(infected), 1, hosp_prob) == 1]
       V(g)$state[newly_hospitalized] <- "H"
       
       
-      # 1. Create a mask matrix for edge retention based on behavioral state
+      # 1. Create a active edge matrix for edge retention based on behavioral state
       
       # Vector indicating which nodes are currently practicing behavior
       behavior_vector <- as.numeric(V(g)$behavior == 1)
@@ -379,11 +390,11 @@ run_sihr_network<-
       # We only update our sparse matrix if there has been behavior change this time step, otherwise it uses the last built sparse matrix
       if(length(changed_nodes) > 0) {
         
-        # list of edges to recompute keep probability (only edges still active from last time, no redraws)
+        # list of edges to recompute keep probability (only currently affected edges)
         affected_edges <- 
           which(edges[,1] %in% changed_nodes | edges[,2] %in% changed_nodes)
         
-        # probability mu of keeping an edge if practicing behavior 
+        # probability mu of keeping an edge if practicing behavior (all changed edges are redrawn)
         p_keep <- ifelse(
           behavior_vector[edges[affected_edges, 1]] == 1 | 
             behavior_vector[edges[affected_edges, 2]] == 1,
@@ -397,7 +408,7 @@ run_sihr_network<-
         # list of all kept and active edges
         edges_kept <- edges[edge_active, , drop = FALSE]
         
-        # rebuild the sparse matrix for the infection level
+        # rebuild the sparse matrix for the infection layer
         A_reduced <- sparseMatrix(
           i = c(edges_kept[,1], edges_kept[,2]),
           j = c(edges_kept[,2], edges_kept[,1]),
@@ -607,6 +618,13 @@ run_sihr_network<-
       }, adoption_times, abandon_times, hr_at_adoption)
     )
     
-    return(list(sihr_df, node_summary, peak_prev, peak_prev_day, peak_prev_network, peak_behavior, peak_behavior_day, peak_behavior_network))
+    return(list(sihr_df, 
+                node_summary, 
+                peak_prev, 
+                peak_prev_day, 
+                peak_prev_network, 
+                peak_behavior, 
+                peak_behavior_day, 
+                peak_behavior_network))
     
   }
