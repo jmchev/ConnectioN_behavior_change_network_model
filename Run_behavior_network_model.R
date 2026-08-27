@@ -160,7 +160,7 @@ for(q in seq_along(networks)){
   clusterSetRNGStream(cl, iseed = 123)
   
   # parallel function 1:number of simulations desired
-  sim_results <- pblapply(1:2, function(k){
+  sim_results <- pblapply(1:100, function(k){
     run_model_functon(k, network, first_infected, starting_infections, sim_centralities, model_params)
   }, cl = cl)
   
