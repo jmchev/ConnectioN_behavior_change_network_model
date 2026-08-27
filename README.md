@@ -14,6 +14,9 @@ The model is set-up to run simulations in parallel. All necessary functions, par
 
 Please see below for further detail on methodology. 
 
+ConnectioN consortium collaborators include: Joshua M Chevalier (model author), Leonard Stellbrink, Florian van Daalen, Lisanne Steijvers, Senne Wijnen, Lilian Kojan, Nannan Li, Beate Jahn, Uwe Siebert, André Calero Valdez, Mickaël Hiligsmann, Rik Crutzen, Nicole Dukers-Muijrers, and Mirjam Kretzschmar (consortium lead). 
+
+
 ## Methods:
 
 ### SIHR Transmission Model
