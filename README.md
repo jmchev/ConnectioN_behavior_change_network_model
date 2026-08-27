@@ -16,6 +16,8 @@ Please see below for further detail on methodology.
 
 ConnectioN consortium collaborators include: Joshua M Chevalier (model author), Leonard Stellbrink, Florian van Daalen, Lisanne Steijvers, Senne Wijnen, Lilian Kojan, Nannan Li, Beate Jahn, Uwe Siebert, André Calero Valdez, Mickaël Hiligsmann, Rik Crutzen, Nicole Dukers-Muijrers, and Mirjam Kretzschmar (consortium lead). 
 
+Connection consortium collaborators include: Joshua M Chevalier (model author; UMC Utrecht), Leonard Stellbrink (University of Luebeck), Florian van Daalen (Maastrict University), Lisanne Steijvers (Maastrict University), Senne Wijnen (Maastrict University), Lilian Kojan (University of Luebeck), Nannan Li (Maastrict University), Beate Jahn (UMIT TIROL), Uwe Siebert (UMIT TIROL), André Calero Valdez (University of Luebeck), Mickaël Hiligsmann (Maastrict University), Rik Crutzen (Maastrict University), Nicole Dukers-Muijrers (GGD-Zuid Limburg, Maastricht University), Mirjam Kretzschmar (consortium lead; UMC Utrecht, University of Munster) 
+
 
 ## Methods:
 
