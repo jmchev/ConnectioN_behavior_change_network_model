@@ -1,6 +1,6 @@
 # ConnectioN Project: Agent-based model with machine learning driven behavioral change
 
-This agent-based model was developed in R (4.4.2) for the purpose of pandemic preparedness and response under funding from ZonMw (Netherlands Organization for Health Research and Development) at University Medical Center Utrecht. 
+This agent-based model was developed in R (4.4.2) for the purpose of pandemic preparedness and response under funding from ZonMw (Netherlands Organization for Health Research and Development; Project number: 10710062310022) at University Medical Center Utrecht. 
 
 The agent-based model utilizes the XGBoost (eXtreme Gradient Boosting) algorithm (R library: xgboost) to predict agent health behavior at each time-step (day) based on assigned agent characteristics (age, gender, perceived COVID-19 severity, willingness to isolate (if directed by health authority), working outside the home (non-remote), and the modelled number of COVID-19 hospitalizations at time t).
 
