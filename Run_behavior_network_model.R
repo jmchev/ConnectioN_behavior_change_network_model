@@ -16,13 +16,32 @@ source("Network_model_parallel_function.R")
 
 xg_behavior_model <- readRDS("xg_behavior_model.rds")
 
-# for baseline results (awareness, behavior, fatigue, readopt, and gate parameters 
-# should all be set to FALSE)
+# BASELINE SCENARIOS
+
 param_df<- read.csv("baseline_param_df.csv")
 
+behavior_functions_list<-
+  list("awareness"=FALSE,
+       "behavior"=FALSE,
+       "fatigue"=FALSE,
+       "readopt"=FALSE,
+       "gate"=FALSE,
+       "threshold"=FALSE
+       )
 
-# for behavior scenario results and sensitivity analysis
+
+# BEHAVIOR SCENARIOS
+
 param_df<- read.csv("behavior_param_df.csv")
+
+behavior_functions_list<-
+  list("awareness"=TRUE,
+       "behavior"=TRUE,
+       "fatigue"=TRUE,
+       "readopt"=TRUE,
+       "gate"=TRUE,
+       "threshold"=FALSE #optional outdated function, set to FALSE
+  )
 
 ################################################################################
 
@@ -39,11 +58,11 @@ networks<- list("Preferential attachment (10)"= pa,
                 "Small world (10, WTI=5)"= sw_wti_5,
                 "Small world (10, WTI=1)"= sw_wti_1,
                 "Small world (10, PS=7)"= sw_ps_7,
-                "Small world (10, PS=1)"= sw_ps_1,
-                "Small world (10, WTI=5, PS=7)"= sw_all_57,
-                "Small world (10, WTI=3, PS=4)"= sw_all_34,
-                "Small world (10, WTI=1, PS=1)"= sw_all_1
+                "Small world (10, PS=1)"= sw_ps_1
 )
+
+first_infected="random"    #OPTIONS: "random", "degree", "eigenvector", "betweenness", "closeness"
+starting_infections=2        #NUMERIC: choose how many starting infections 
 
 for(q in 1:nrow(param_df)){
   
@@ -71,12 +90,12 @@ for(q in 1:nrow(param_df)){
   beta_hosp<-params$beta_hosp[q]
   hosp_window<- 7
   hosp_threshold<- 0.05
-  awareness<- T
-  behavior<- T
-  fatigue<- T
-  readopt<- T
-  gate<- T
-  threshold<- F
+  awareness<- behavior_functions_list[[1]]
+  behavior<- behavior_functions_list[[2]]
+  fatigue<- behavior_functions_list[[3]]
+  readopt<- behavior_functions_list[[4]]
+  gate<- behavior_functions_list[[5]]
+  threshold<- behavior_functions_list[[6]]
   voi<-  strsplit(params$voi[q], ",")[[1]] #c("age", "gender", "hospital_occupancy_per_100k", "perc_severe", "willing_to_isolate", "working_outside_home")
   scaling_factor<- 100
   
@@ -145,7 +164,7 @@ for(q in 1:nrow(param_df)){
                       scaling_factor)
   
   
-  # create cluster with 10 cores (12 cores total, 8 performance, 4 efficiency)
+  # create cluster, save 2 cores
   cl <- makeCluster(parallel::detectCores() - 2)
   
   # export everything the function needs to each core
