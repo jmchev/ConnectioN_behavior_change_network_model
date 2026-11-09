@@ -45,7 +45,7 @@ networks<- list("Preferential attachment (10)"= pa,
                 "Small world (10, WTI=1, PS=1)"= sw_all_1
 )
 
-for(q in 1:nrow(param_df_5)){
+for(q in 1:nrow(param_df)){
   
   params<- param_df
   
