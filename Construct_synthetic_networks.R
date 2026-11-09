@@ -31,6 +31,8 @@ sw <- sample_smallworld(1, n, k, p)
 # Assign agent characteristics from behavioral data based on degree order, 
 # observations with a greater network size are assigned to nodes with the greatest degree
 
+# original small world network
+
 degree_order <- order(degree(sw), decreasing = TRUE)
 
 V(sw)$age[degree_order] <- sample_df$age
@@ -39,6 +41,54 @@ V(sw)$working_outside_home[degree_order] <- sample_df$working_outside_home
 V(sw)$perc_severe[degree_order] <- sample_df$perc_severe
 V(sw)$willing_to_isolate[degree_order] <- sample_df$willing_to_isolate
 
+
+#willingness to isolate is set to score 5 for all agents
+
+sw_wti_5<- sw
+
+degree_order <- order(degree(sw_wti_5), decreasing = TRUE)
+
+V(sw_wti_5)$age[degree_order] <- sample_df$age
+V(sw_wti_5)$gender[degree_order] <- sample_df$gender
+V(sw_wti_5)$working_outside_home[degree_order] <- sample_df$working_outside_home
+V(sw_wti_5)$perc_severe[degree_order] <- sample_df$perc_severe
+V(sw_wti_5)$willing_to_isolate[degree_order] <- 5
+
+#willingness to isolate is set to score 1 for all agents
+
+sw_wti_1<- sw
+
+degree_order <- order(degree(sw_wti_1), decreasing = TRUE)
+
+V(sw_wti_1)$age[degree_order] <- sample_df$age
+V(sw_wti_1)$gender[degree_order] <- sample_df$gender
+V(sw_wti_1)$working_outside_home[degree_order] <- sample_df$working_outside_home
+V(sw_wti_1)$perc_severe[degree_order] <- sample_df$perc_severe
+V(sw_wti_1)$willing_to_isolate[degree_order] <- 1
+
+#perceived severity is set to score 7 for all agents
+
+sw_ps_7<- sw
+
+degree_order <- order(degree(sw_ps_7), decreasing = TRUE)
+
+V(sw_ps_7)$age[degree_order] <- sample_df$age
+V(sw_ps_7)$gender[degree_order] <- sample_df$gender
+V(sw_ps_7)$working_outside_home[degree_order] <- sample_df$working_outside_home
+V(sw_ps_7)$perc_severe[degree_order] <- 7
+V(sw_ps_7)$willing_to_isolate[degree_order] <- sample_df$willing_to_isolate
+
+#perceived severity is set to score 1 for all agents
+
+sw_ps_1<- sw
+
+degree_order <- order(degree(sw_ps_1), decreasing = TRUE)
+
+V(sw_ps_1)$age[degree_order] <- sample_df$age
+V(sw_ps_1)$gender[degree_order] <- sample_df$gender
+V(sw_ps_1)$working_outside_home[degree_order] <- sample_df$working_outside_home
+V(sw_ps_1)$perc_severe[degree_order] <- 1
+V(sw_ps_1)$willing_to_isolate[degree_order] <- sample_df$willing_to_isolate
 
 
 ################################################################################

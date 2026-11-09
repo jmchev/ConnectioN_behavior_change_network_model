@@ -1,0 +1,10 @@
+network,alpha_aware,beta_aware,alpha_hosp,beta_hosp,fatigue_shape,fatigue_scale,infection_prob,hosp_prob,voi
+Preferential attachment (10),15,0.55,16,0.6,2.34,43.46,0.0328,0.0079,"age,gender,hospital_occupancy_per_100k,perc_severe,willing_to_isolate,working_outside_home"
+Random (10),15,0.55,16,0.6,2.34,43.46,0.0328,0.0079,"age,gender,hospital_occupancy_per_100k,perc_severe,willing_to_isolate,working_outside_home"
+Small world (10),15,0.55,16,0.6,2.34,43.46,0.0328,0.0079,"age,gender,hospital_occupancy_per_100k,perc_severe,willing_to_isolate,working_outside_home"
+Preferential attachment (10),15,0.55,16,0.6,2.34,43.46,0.025,0.0079,"age,gender,hospital_occupancy_per_100k,perc_severe,willing_to_isolate,working_outside_home"
+Random (10),15,0.55,16,0.6,2.34,43.46,0.025,0.0079,"age,gender,hospital_occupancy_per_100k,perc_severe,willing_to_isolate,working_outside_home"
+Small world (10),15,0.55,16,0.6,2.34,43.46,0.025,0.0079,"age,gender,hospital_occupancy_per_100k,perc_severe,willing_to_isolate,working_outside_home"
+Preferential attachment (10),15,0.55,16,0.6,2.34,43.46,0.04,0.0079,"age,gender,hospital_occupancy_per_100k,perc_severe,willing_to_isolate,working_outside_home"
+Random (10),15,0.55,16,0.6,2.34,43.46,0.04,0.0079,"age,gender,hospital_occupancy_per_100k,perc_severe,willing_to_isolate,working_outside_home"
+Small world (10),15,0.55,16,0.6,2.34,43.46,0.04,0.0079,"age,gender,hospital_occupancy_per_100k,perc_severe,willing_to_isolate,working_outside_home"
